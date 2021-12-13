@@ -5,7 +5,7 @@ import { queryInAroundTime, queryLastest } from './hander';
 interface queryProps {
   from: 'chain' | 'market',
   token: string;
-  times?: string[];
+  times?: string;
 }
 
 export const queryRoutes: RouteOptions[] = [
@@ -20,7 +20,8 @@ export const queryRoutes: RouteOptions[] = [
     },
     handler: async (req, res) => {
       const { token, from, times } = req.query as queryProps;
-      if(!ALLOW_TOKENS.includes(token.toUpperCase())) {
+      const times_array = times && times.length > 0 ? times?.split(',') : [];
+      if (!ALLOW_TOKENS.includes(token.toUpperCase())) {
         return {
           code: 0,
           data: {
@@ -29,7 +30,7 @@ export const queryRoutes: RouteOptions[] = [
           }
         };
       }
-      if (!times || times.length == 0) {
+      if (!times_array || times_array.length == 0) {
         const data = await queryLastest(from, token.toUpperCase());
         const [error, price] = data;
         if (error != null) {
@@ -55,7 +56,7 @@ export const queryRoutes: RouteOptions[] = [
           }
         };
       } else {
-        const pirces = await Promise.all(times.map(time => queryInAroundTime(from, token.toUpperCase(), time)));
+        const pirces = await Promise.all(times_array.map(time => queryInAroundTime(from, token.toUpperCase(), time)));
         return {
           code: 1,
           data: {

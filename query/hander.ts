@@ -25,14 +25,14 @@ export const queryLastest = async (from: TFrom = 'market', token: string) => {
   }
 }
 
-const getAroundTimes = (time: string | Date) => {
+const getAroundTimes = (time: string) => {
   const date = moment(time).format('YYYY-MM-DD HH:mm:00');
   const startDate = moment(date).subtract(5, 'minutes');
   const endDate = moment(date).add(5, 'minutes');
   return [startDate.toDate(), endDate.toDate()];
 }
 
-export const queryInAroundTime = async (from: TFrom = 'market', token: string, time: string | Date) => {
+export const queryInAroundTime = async (from: TFrom = 'market', token: string, time: string) => {
   const [startTime, endTime] = getAroundTimes(time);
   try {
     const data = await priceModal.findOne({ from: from, token: token, createTime : { "$gte" : startTime, "$lte" : endTime } });
