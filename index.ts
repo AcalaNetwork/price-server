@@ -15,7 +15,6 @@ export class Server {
     this.port = port;
     this.name = name;
     this.server = fastify();
-    this.registeMiddlies(cors);
     this.connectMongo();
     this.redisClient = this.connectRedis();
     this.registePreHook((req, res, done) => {
