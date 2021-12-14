@@ -25,6 +25,30 @@ export const queryLastest = async (from: TFrom = 'market', token: string) => {
   }
 }
 
+export const QueryInRange = async (from: TFrom, token: string, totalCount: number, unit: 'D' | 'H', num?: number) => {
+  const redisKey = unit === 'D' ? `${moment(new Date()).format('YYYY-MM-DD')}-${num}-${unit}-${totalCount}` : `${moment(new Date()).format('YYYY-MM-DD-HH')}-${num}-${unit}-${totalCount}`;
+  const redisClient = server.getRedisClient();
+  try {
+    const redisPrices = await get(redisClient, redisKey);
+    if (!redisPrices || redisPrices === '[]') {
+      const times = GetPreNTimes(totalCount, unit, num);
+      const dbPirces = await Promise.all(times.map(time => queryInAroundTime(from, token.toUpperCase(), time)));
+      const hasZero = dbPirces.filter(item => item === 0).length > 0;
+      if (hasZero) {
+        return ['has zero price', dbPirces];
+      } else {
+        await set(redisClient, redisKey, JSON.stringify(dbPirces), 'EX', 60);
+        return [null, dbPirces];
+      }
+    } else {
+      return [null, JSON.parse(redisPrices)];
+    }
+  } catch (error: any) {
+    return [error.toString(), null];
+  }
+  
+}
+
 const getAroundTimes = (time: string) => {
   const date = moment(time).format('YYYY-MM-DD HH:mm:00');
   const startDate = moment(date).subtract(5, 'minutes');
@@ -35,9 +59,20 @@ const getAroundTimes = (time: string) => {
 export const queryInAroundTime = async (from: TFrom = 'market', token: string, time: string) => {
   const [startTime, endTime] = getAroundTimes(time);
   try {
-    const data = await priceModal.findOne({ from: from, token: token, createTime : { "$gte" : startTime, "$lte" : endTime } });
+    const data = await priceModal.findOne({ from: from, token: token, createTime: { "$gte": startTime, "$lte": endTime } });
     return data?.price || 0;
   } catch (error) {
     return 0;
   }
+}
+
+export const GetPreNTimes = (total: number, unit: 'D' | 'H', num = 1) => {
+  const now = new Date();
+  const times: string[] = [];
+  for (let i = 1; i < total; i++) {
+    const date = moment(now).subtract(num * i, unit === 'D' ? 'days' : 'hours').format('YYYY-MM-DD HH:mm:ss');
+    times.push(date);
+  }
+
+  return times;
 }

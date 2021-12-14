@@ -1,11 +1,13 @@
 import { RouteOptions } from 'fastify';
 import { ALLOW_TOKENS, generateLogData, postEvent } from '../utils';
-import { queryInAroundTime, queryLastest } from './hander';
+import { GetPreNTimes, queryInAroundTime, QueryInRange, queryLastest } from './hander';
 
 interface queryProps {
   from: 'chain' | 'market',
   token: string;
-  times?: string;
+  totalCount?: number;
+  intervalUnit?: 'D' | 'H',
+  intervalNum?: number;
 }
 
 export const queryRoutes: RouteOptions[] = [
@@ -19,8 +21,7 @@ export const queryRoutes: RouteOptions[] = [
       }
     },
     handler: async (req, res) => {
-      const { token, from, times } = req.query as queryProps;
-      const times_array = times && times.length > 0 ? times?.split(',') : [];
+      const { token, from, totalCount, intervalUnit, intervalNum } = req.query as queryProps;
       if (!ALLOW_TOKENS.includes(token.toUpperCase())) {
         return {
           code: 0,
@@ -30,7 +31,7 @@ export const queryRoutes: RouteOptions[] = [
           }
         };
       }
-      if (!times_array || times_array.length == 0) {
+      if (!totalCount || totalCount <= 0 || !intervalUnit) {
         const data = await queryLastest(from, token.toUpperCase());
         const [error, price] = data;
         if (error != null) {
@@ -56,11 +57,11 @@ export const queryRoutes: RouteOptions[] = [
           }
         };
       } else {
-        const pirces = await Promise.all(times_array.map(time => queryInAroundTime(from, token.toUpperCase(), time)));
+        const prices = await QueryInRange(from, token, totalCount, intervalUnit, intervalNum);
         return {
           code: 1,
           data: {
-            price: pirces,
+            price: prices,
             messgae: '',
           }
         }
