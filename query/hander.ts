@@ -69,7 +69,7 @@ export const queryInAroundTime = async (from: TFrom = 'market', token: string, t
 export const GetPreNTimes = (total: number, unit: 'D' | 'H', num = 1) => {
   const now = new Date();
   const times: string[] = [];
-  for (let i = 1; i < total; i++) {
+  for (let i = 0; i < total; i++) {
     const date = moment(now).subtract(num * i, unit === 'D' ? 'days' : 'hours').format('YYYY-MM-DD HH:mm:ss');
     times.push(date);
   }
