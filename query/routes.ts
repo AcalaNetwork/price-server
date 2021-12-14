@@ -57,12 +57,22 @@ export const queryRoutes: RouteOptions[] = [
           }
         };
       } else {
-        const prices = await QueryInRange(from, token, totalCount, intervalUnit, intervalNum);
-        return {
-          code: 1,
-          data: {
-            price: prices,
-            messgae: '',
+        const [error, prices] = await QueryInRange(from, token, totalCount, intervalUnit, intervalNum);
+        if(error != null ) {
+          return {
+            code: 1,
+            data: {
+              price: prices,
+              messgae: error,
+            }
+          }
+        } else {
+          return {
+            code: 1,
+            data: {
+              price: prices,
+              messgae: '',
+            }
           }
         }
       }

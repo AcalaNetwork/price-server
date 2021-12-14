@@ -35,7 +35,7 @@ export const QueryInRange = async (from: TFrom, token: string, totalCount: numbe
       const dbPirces = await Promise.all(times.map(time => queryInAroundTime(from, token.toUpperCase(), time)));
       const hasZero = dbPirces.filter(item => item === 0).length > 0;
       if (hasZero) {
-        return ['has zero price', dbPirces];
+        return ['exist 0 price', dbPirces];
       } else {
         await set(redisClient, redisKey, JSON.stringify(dbPirces), 'EX', 60);
         return [null, dbPirces];
@@ -44,7 +44,7 @@ export const QueryInRange = async (from: TFrom, token: string, totalCount: numbe
       return [null, JSON.parse(redisPrices)];
     }
   } catch (error: any) {
-    return [error.toString(), null];
+    return [error.toString(), []];
   }
   
 }
