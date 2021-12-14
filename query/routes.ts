@@ -6,7 +6,7 @@ interface queryProps {
   from: 'chain' | 'market',
   token: string;
   totalCount?: number;
-  intervalUnit?: 'D' | 'H',
+  intervalUnit?: string,
   intervalNum?: number;
 }
 

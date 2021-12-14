@@ -25,7 +25,7 @@ export const queryLastest = async (from: TFrom = 'market', token: string) => {
   }
 }
 
-export const QueryInRange = async (from: TFrom, token: string, totalCount: number, unit: 'D' | 'H', num?: number) => {
+export const QueryInRange = async (from: TFrom, token: string, totalCount: number, unit: string, num = 1) => {
   const redisKey = unit === 'D' ? `${moment(new Date()).format('YYYY-MM-DD')}-${num}-${unit}-${totalCount}` : `${moment(new Date()).format('YYYY-MM-DD-HH')}-${num}-${unit}-${totalCount}`;
   const redisClient = server.getRedisClient();
   try {
@@ -66,11 +66,11 @@ export const queryInAroundTime = async (from: TFrom = 'market', token: string, t
   }
 }
 
-export const GetPreNTimes = (total: number, unit: 'D' | 'H', num = 1) => {
-  const now = new Date();
+export const GetPreNTimes = (total: number, unit: string, num = 1) => {
+  const now = moment(new Date()).subtract(10, 'minutes');
   const times: string[] = [];
   for (let i = 0; i < total; i++) {
-    const date = moment(now).subtract(num * i, unit === 'D' ? 'days' : 'hours').format('YYYY-MM-DD HH:mm:ss');
+    const date = now.subtract(num * i, unit === 'D' ? 'days' : 'hours').format('YYYY-MM-DD HH:mm:ss');
     times.push(date);
   }
 
