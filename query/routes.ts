@@ -57,7 +57,7 @@ export const queryRoutes: RouteOptions[] = [
           }
         };
       } else {
-        const [error, prices] = await QueryInRange(from, token, totalCount, intervalUnit, intervalNum);
+        const [error, prices] = await QueryInRange(from, token, totalCount, intervalUnit.toUpperCase(), intervalNum);
         if(error != null ) {
           return {
             code: 1,
