@@ -26,7 +26,7 @@ export const queryLastest = async (from: TFrom = 'market', token: string) => {
 }
 
 export const QueryInRange = async (from: TFrom, token: string, totalCount: number, unit: string, num = 1) => {
-  const redisKey = unit === 'D' ? `${moment(new Date()).format('YYYY-MM-DD')}-${num}-${unit}-${totalCount}` : `${moment(new Date()).format('YYYY-MM-DD-HH')}-${num}-${unit}-${totalCount}`;
+  const redisKey = unit === 'D' ? `${moment(new Date()).format('YYYY-MM-DD')}-${num}-${unit}-${totalCount}-${from}-${token}` : `${moment(new Date()).format('YYYY-MM-DD-HH')}-${num}-${unit}-${totalCount}-${from}-${token}`;
   const redisClient = server.getRedisClient();
   try {
     const redisPrices = await get(redisClient, redisKey);
