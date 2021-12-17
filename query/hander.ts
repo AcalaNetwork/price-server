@@ -1,4 +1,4 @@
-import { get, priceModal, set } from "../db";
+import { exchangeModal, get, priceModal, set } from "../db";
 import moment from "moment";
 import { generateRedisKey, TFrom } from "../utils";
 import { server } from './index';
@@ -46,7 +46,28 @@ export const QueryInRange = async (from: TFrom, token: string, totalCount: numbe
   } catch (error: any) {
     return [error.toString(), []];
   }
-  
+}
+
+export const queryExchange = async (base = 'USD', convert = 'CNY') => {
+  const redisKey = `${base}-${convert}`;
+  const redisClient = server.getRedisClient();
+  try {
+    const redisExchange = await get(redisClient, redisKey);
+    if (!redisExchange || redisExchange === '0') {
+      const dbExchange = await exchangeModal.find().sort({ createTime: -1 }).limit(1);
+      if (!dbExchange || dbExchange.length === 0) {
+        return ['no exchange rate', null];
+      } else {
+        const Exchange = dbExchange[0].rate;
+        await set(redisClient, redisKey, Exchange.toString(), 'EX', 60 * 60 * 12);
+        return [null, Exchange];
+      }
+    } else {
+      return [null, Number(redisExchange as string)];
+    }
+  } catch (error: any) {
+    return [error.toString(), null];
+  }
 }
 
 const getAroundTimes = (time: string) => {

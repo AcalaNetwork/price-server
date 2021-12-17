@@ -26,3 +26,25 @@ const priceSchema = new mongo.Schema({
 })
 
 export const priceModal = mongo.model<IPrice>('price', priceSchema);
+
+interface IExchange {
+  base: String;
+  convert: String;
+  rate: Number;
+}
+
+const exchangeSchema = new mongo.Schema({
+  rate: {
+    type: Number,
+    default: 0,
+  },
+  base: String,
+  convert: String,
+  createTime: {
+    type: Date,
+    default: new Date(),
+    index: true
+  },
+})
+
+export const exchangeModal = mongo.model<IExchange>('exchange', exchangeSchema);

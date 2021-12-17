@@ -1,6 +1,6 @@
 import { RouteOptions } from 'fastify';
 import { ALLOW_TOKENS, generateLogData, postEvent } from '../utils';
-import { GetPreNTimes, queryInAroundTime, QueryInRange, queryLastest } from './hander';
+import { queryExchange, QueryInRange, queryLastest } from './hander';
 
 interface queryProps {
   from: 'chain' | 'market',
@@ -58,7 +58,7 @@ export const queryRoutes: RouteOptions[] = [
         };
       } else {
         const [error, prices] = await QueryInRange(from, token, totalCount, intervalUnit.toUpperCase(), intervalNum);
-        if(error != null ) {
+        if (error != null) {
           return {
             code: 1,
             data: {
@@ -76,6 +76,30 @@ export const queryRoutes: RouteOptions[] = [
           }
         }
       }
+    }
+  }, {
+    method: 'GET',
+    url: '/rate',
+    handler: async (req, res) => {
+      const data = await queryExchange();
+      const [error, rate] = data;
+      if (error != null) {
+        return {
+          code: 0,
+          data: {
+            rate: 0,
+            message: error
+          }
+        }
+      } else {
+        return {
+          code: 1,
+          data: {
+            rate: rate,
+            message: '',
+          }
+        }
+      };
     }
   }
 ];
