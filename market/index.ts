@@ -119,10 +119,6 @@ const fetchExchange = async () => {
     },
     headers: {
       "X-CMC_PRO_API_KEY": cmc_api_key,
-    },
-    proxy: {
-      host: '127.0.0.1',
-      port: 7890
     }
   })
 
