@@ -22,6 +22,15 @@ export const queryRoutes: RouteOptions[] = [
     },
     handler: async (req, res) => {
       const { token, from, totalCount, intervalUnit, intervalNum } = req.query as queryProps;
+      if(token.toUpperCase() === 'ACA') {
+        return {
+          code: 1,
+          data: {
+            price: [0],
+            message: ''
+          }
+        }
+      }
       if (!ALLOW_TOKENS.includes(token.toUpperCase())) {
         return {
           code: 0,
