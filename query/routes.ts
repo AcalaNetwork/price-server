@@ -33,7 +33,7 @@ export const queryRoutes: RouteOptions[] = [
           }
         }
       }
-      if(['RMRK', 'KRMRK'].includes(_token.toUpperCase())) {
+      if('KRMRK' === _token.toUpperCase()) {
         _token = 'RMRK';
       }
       if (!ALLOW_TOKENS.includes(_token.toUpperCase())) {
