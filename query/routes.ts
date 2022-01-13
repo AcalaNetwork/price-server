@@ -22,6 +22,8 @@ export const queryRoutes: RouteOptions[] = [
     },
     handler: async (req, res) => {
       const { token, from, totalCount, intervalUnit, intervalNum } = req.query as queryProps;
+      // RMRK && KRMRK PSPECIAL TREATMENT
+      let _token = token;
       if(token.toUpperCase() === 'ACA') {
         return {
           code: 1,
@@ -31,7 +33,10 @@ export const queryRoutes: RouteOptions[] = [
           }
         }
       }
-      if (!ALLOW_TOKENS.includes(token.toUpperCase())) {
+      if(['RMRK', 'KRMRK'].includes(_token.toUpperCase())) {
+        _token = 'RMRK';
+      }
+      if (!ALLOW_TOKENS.includes(_token.toUpperCase())) {
         return {
           code: 0,
           data: {
@@ -41,7 +46,7 @@ export const queryRoutes: RouteOptions[] = [
         };
       }
       if (!totalCount || totalCount <= 0 || !intervalUnit) {
-        const data = await queryLastest(from, token.toUpperCase());
+        const data = await queryLastest(from, _token.toUpperCase());
         const [error, price] = data;
         if (error != null) {
           await postEvent({
@@ -66,7 +71,7 @@ export const queryRoutes: RouteOptions[] = [
           }
         };
       } else {
-        const [error, prices] = await QueryInRange(from, token, totalCount, intervalUnit.toUpperCase(), intervalNum);
+        const [error, prices] = await QueryInRange(from, _token, totalCount, intervalUnit.toUpperCase(), intervalNum);
         if (error != null) {
           return {
             code: 1,
