@@ -3,7 +3,7 @@ import cors from 'fastify-cors';
 import mongo from 'mongoose';
 import ioredis, { Redis } from 'ioredis';
 import { MONGO_PORT, REDIS_PORT } from './utils/config';
-import { auth, checkThreshold, logger } from './utils';
+import { auth, logger } from './utils';
 
 export class Server {
   private port: number;
@@ -20,16 +20,6 @@ export class Server {
     this.registePreHook((req, res, done) => {
       logger(name, req, res);
       done();
-    })
-    this.registePreHook(async (req, res, done) => {
-      const needNext = await checkThreshold(req, this.redisClient);
-      if(needNext) done();
-      else res.send({
-        code: 0,
-        data: {
-          message: 'Frequent interface requests'
-        }
-      })
     })
     auth()
   };

@@ -47,21 +47,6 @@ export const logger = (name: string, request: FastifyRequest, res: FastifyReply)
   })
 }
 
-// middleware to validate request
-export const checkThreshold = async (request: FastifyRequest, redisClient: Redis) => {
-  const { ip, method } = request;
-  const path = ip.split('?')[0];
-
-  const redisKey = `${path}:${method}:${ip}`;
-  const times = await redisClient.keys(`${redisKey}*`);
-  if (times.length > 1200) {
-    return false;
-  } else {
-    await redisClient.set(`${redisKey}:${new Date().getTime()}`, new Date().getTime().toString(), 'EX', 60);
-    return true;
-  }
-}
-
 // write lastest price into db and update redis
 export const writePrice = async (redisClient: Redis, token: string, from: TFrom, price: number, time: string | Date) => {
   const redisKey = generateRedisKey(from, token, 'lastest');
