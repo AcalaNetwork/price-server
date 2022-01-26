@@ -2,7 +2,8 @@ import { Server } from "..";
 import { MARKET_PORT, ALLOW_TOKENS, CMC_API_URL, QUERY_INTERVAL, TOKENS_MAP, TTokens, writePrice, postEvent, CMC_API_URL_EXCHANGE } from '../utils';
 import { marketRoutes } from './routes';
 import axios from 'axios-https-proxy-fix';
-import { exchangeModal } from "../db";
+import { exchangeModal, priceModal } from "../db";
+import { upload } from "../utils/uploadQiuniu";
 
 const server = new Server(MARKET_PORT, 'market');
 server.registeRoutes(marketRoutes);
@@ -19,6 +20,10 @@ setInterval(() => {
 setInterval(() => {
   fetchExchange();
 }, 1000 * 60 * 60 * 12)
+
+setInterval(() => {
+  pushPrice();
+}, 1000 * 60 * 10)
 
 interface CMC {
   status: {
@@ -136,10 +141,25 @@ const fetchExchange = async () => {
       convert: 'CNY',
       rate: price,
       createTime: last_updated
-    }).then(res => console.log(res));
+    });
   } else {
     return setTimeout(() => {
       fetchExchange();
     }, 1000);
   }
+}
+
+const pushPrice = async () => {
+  const pricesData = await Promise.all(ALLOW_TOKENS.map(token => priceModal.find({ token: token }).sort({ createTime: -1 }).limit(1)));
+  const prices = pricesData.map(price => price[0].price);
+  const exchangeData = await exchangeModal.find().sort({ createTime: -1 }).limit(1);
+  const exchange = exchangeData[0].rate;
+
+  const json = {
+    tokens: ALLOW_TOKENS,
+    prices: prices,
+    rate: exchange,
+  }
+
+  await upload(JSON.stringify(json));
 }
