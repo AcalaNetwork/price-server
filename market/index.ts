@@ -11,6 +11,7 @@ server.registeRoutes(marketRoutes);
 server.start(async () => {
   fetchPrice(ALLOW_TOKENS);
   fetchExchange();
+  pushPrice();
 });
 
 setInterval(() => {
@@ -149,17 +150,29 @@ const fetchExchange = async () => {
   }
 }
 
+interface PriceFileProps {
+  prices: {
+    [token: string]: Number;
+  },
+  rate: Number;
+}
+
 const pushPrice = async () => {
+  const json: PriceFileProps = {
+    prices: {},
+    rate: 0,
+  }
+
   const pricesData = await Promise.all(ALLOW_TOKENS.map(token => priceModal.find({ token: token }).sort({ createTime: -1 }).limit(1)));
   const prices = pricesData.map(price => price[0].price);
   const exchangeData = await exchangeModal.find().sort({ createTime: -1 }).limit(1);
   const exchange = exchangeData[0].rate;
 
-  const json = {
-    tokens: ALLOW_TOKENS,
-    prices: prices,
-    rate: exchange,
-  }
+  ALLOW_TOKENS.map((item, index) => {
+    json.prices[item] = prices[index];
+  });
+
+  json.rate = exchange;
 
   await upload(JSON.stringify(json));
 }
