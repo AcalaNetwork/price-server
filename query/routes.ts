@@ -24,15 +24,6 @@ export const queryRoutes: RouteOptions[] = [
       const { token, from, totalCount, intervalUnit, intervalNum } = req.query as queryProps;
       // RMRK && KRMRK PSPECIAL TREATMENT
       let _token = token;
-      if(token.toUpperCase() === 'ACA') {
-        return {
-          code: 1,
-          data: {
-            price: [0],
-            message: ''
-          }
-        }
-      }
       if('KRMRK' === _token.toUpperCase()) {
         _token = 'RMRK';
       }
