@@ -177,5 +177,10 @@ const pushPrice = async () => {
 
   json.rate = exchange;
 
-  await upload(JSON.stringify(json));
+  try {
+    const res = await upload(JSON.stringify(json));
+    console.log(res);
+  } catch (error) {
+    console.log(error);
+  };
 }

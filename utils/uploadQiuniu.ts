@@ -21,15 +21,13 @@ export const upload = async (data: any) => {
     fs.writeFile('./lastPrice.json', data, (err) => {
       if (!err) {
         formUploader.putFile(uploadToken, key, localFile, putExtra, (respErr, respBody, respInfo) => {
-          console.log(respBody)
           if (respErr) {
-            rej(err)
+            rej(respErr)
           } else {
-            res(respBody)
+            res({respBody: {...respBody}, respInfo: {...respInfo}})
           }
         });
       } else {
-        console.log(2)
         rej(err)
       }
     });
