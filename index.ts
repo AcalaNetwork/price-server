@@ -53,15 +53,15 @@ export class Server {
   }
 
   public connectMongo() {
-    // mongo.connect(`mongodb://mongo:${MONGO_PORT}/price`).then(() => {
-    mongo.connect(`mongodb://localhost:${MONGO_PORT}/price`).then(() => {
+    mongo.connect(`mongodb://mongo:${MONGO_PORT}/price`).then(() => {
+    // mongo.connect(`mongodb://localhost:${MONGO_PORT}/price`).then(() => {
       console.log(`Mongo in [${this.name}] Connect Success!`);
     });
   }
 
   public connectRedis() {
-    // const redisClient = new ioredis({host: 'redis'});
-    const redisClient = new ioredis(REDIS_PORT);
+    const redisClient = new ioredis({host: 'redis'});
+    // const redisClient = new ioredis(REDIS_PORT);
     redisClient.on('connect', () => {
       console.log(`Redis in [${this.name}] Connect Success!`);
     })
