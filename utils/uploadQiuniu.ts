@@ -1,11 +1,10 @@
 import qiniu from 'qiniu';
 import fs from 'fs';
-import { accessKey, secretKey } from './config';
 
 export const upload = async (data: any) => {
   const localFile = `./lastPrice.json`;
   const key = `lastPrice.json`;
-  const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
+  const mac = new qiniu.auth.digest.Mac(process.env.QINIU_ACCESS_KEY, process.env.QINIU_SECRET_KEY);
   const options = {
     scope: `polkawallet:${key}`,
   };

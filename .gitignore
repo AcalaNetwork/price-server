@@ -1,7 +1,7 @@
-node_modules/
+node_modules
 package-lock*
-utils/config.ts
 pm2.config.js
 nodemon*
 dist/
 logs/*
+lastPrice.json

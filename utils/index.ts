@@ -1,8 +1,6 @@
 import { get, priceModal, set, del } from "../db"
 import { Redis } from "ioredis"
 import { TFrom } from "./config";
-import fs from 'fs';
-import path from 'path'
 import { FastifyReply, FastifyRequest } from "fastify";
 import moment from "moment";
 
@@ -34,17 +32,6 @@ export const generateLogData = (req: FastifyRequest, res: FastifyReply) => {
     headers: req.headers,
     res: res.statusCode
   }
-}
-
-// request info write to log file
-export const logger = (name: string, request: FastifyRequest, res: FastifyReply) => {
-  const fileName = `${name}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
-  const logfile = path.resolve(__dirname, '..', 'logs', fileName);
-  const logData = generateLogData(request, res);
-  console.log(JSON.stringify(logData));
-  fs.appendFile(logfile, `${JSON.stringify(logData)}\n`, () => {
-    request.log.info(logData);
-  })
 }
 
 // write lastest price into db and update redis

@@ -3,7 +3,7 @@ import cors from 'fastify-cors';
 import mongo from 'mongoose';
 import ioredis, { Redis } from 'ioredis';
 import { MONGO_PORT, REDIS_PORT } from './utils/config';
-import { auth, logger } from './utils';
+import { auth } from './utils';
 
 export class Server {
   private port: number;
@@ -18,7 +18,7 @@ export class Server {
     this.connectMongo();
     this.redisClient = this.connectRedis();
     this.registePreHook((req, res, done) => {
-      logger(name, req, res);
+      console.log(req.url)
       done();
     })
     auth()
@@ -53,15 +53,15 @@ export class Server {
   }
 
   public connectMongo() {
-    mongo.connect(`mongodb://mongo:${MONGO_PORT}/price`).then(() => {
-    // mongo.connect(`mongodb://localhost:${MONGO_PORT}/price`).then(() => {
+    // mongo.connect(`mongodb://mongo:${MONGO_PORT}/price`).then(() => {
+    mongo.connect(`mongodb://localhost:${MONGO_PORT}/price`).then(() => {
       console.log(`Mongo in [${this.name}] Connect Success!`);
     });
   }
 
   public connectRedis() {
-    const redisClient = new ioredis({host: 'redis'});
-    // const redisClient = new ioredis(REDIS_PORT);
+    // const redisClient = new ioredis({host: 'redis'});
+    const redisClient = new ioredis(REDIS_PORT);
     redisClient.on('connect', () => {
       console.log(`Redis in [${this.name}] Connect Success!`);
     })

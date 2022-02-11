@@ -1,5 +1,5 @@
 import { Server } from "..";
-import { MARKET_PORT, ALLOW_TOKENS, CMC_API_URL, QUERY_INTERVAL, TOKENS_MAP, TTokens, writePrice, postEvent, CMC_API_URL_EXCHANGE } from '../utils';
+import { MARKET_PORT, ALLOW_TOKENS, CMC_API_URL, TOKENS_MAP, TTokens, writePrice, postEvent, CMC_API_URL_EXCHANGE } from '../utils';
 import { marketRoutes } from './routes';
 import axios from 'axios-https-proxy-fix';
 import { exchangeModal, priceModal } from "../db";
@@ -17,7 +17,7 @@ server.start(async () => {
 
 setInterval(() => {
   fetchPrice(ALLOW_TOKENS);
-}, QUERY_INTERVAL);
+}, 1000 * 60 * 10);
 
 setInterval(() => {
   fetchExchange();
@@ -160,6 +160,8 @@ interface PriceFileProps {
 }
 
 const pushPrice = async () => {
+  if(!process.env.QINIU_ACCESS_KEY || !process.env.QINIU_SECRET_KEY) return;
+
   const json: PriceFileProps = {
     prices: {},
     rate: 0,
