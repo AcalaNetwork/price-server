@@ -4,6 +4,7 @@ import { marketRoutes } from './routes';
 import axios from 'axios-https-proxy-fix';
 import { exchangeModal, priceModal } from "../db";
 import { upload } from "../utils/uploadQiuniu";
+import moment from "moment";
 
 const server = new Server(MARKET_PORT, 'market');
 server.registeRoutes(marketRoutes);
@@ -155,12 +156,14 @@ interface PriceFileProps {
     [token: string]: Number;
   },
   rate: Number;
+  time: string;
 }
 
 const pushPrice = async () => {
   const json: PriceFileProps = {
     prices: {},
     rate: 0,
+    time: moment().format('YYYY-MM-DD HH:mm:ss')
   }
 
   const pricesData = await Promise.all(ALLOW_TOKENS.map(token => priceModal.find({ token: token }).sort({ createTime: -1 }).limit(1)));
@@ -174,5 +177,10 @@ const pushPrice = async () => {
 
   json.rate = exchange;
 
-  await upload(JSON.stringify(json));
+  try {
+    const res = await upload(JSON.stringify(json));
+    console.log(res);
+  } catch (error) {
+    console.log(error);
+  };
 }
