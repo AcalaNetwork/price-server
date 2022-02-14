@@ -17,10 +17,6 @@ export class Server {
     this.server = fastify();
     this.connectMongo();
     this.redisClient = this.connectRedis();
-    this.registePreHook((req, res, done) => {
-      console.log(req.url)
-      done();
-    })
     auth()
   };
 
