@@ -1,4 +1,65 @@
-# start step
+# 1. start with your db and redis
+1. docker pull image
+```bash
+  # docker image pushed in docker hub named: “shenger/price-server:1.0":
+  docker pull shenger/price-server:1.0
+```
+
+2. create config file;
+```js
+// example
+// "DD_*": for monitoring
+// "CMC_API_KEY": for getting lastest price saved to db, maybe you need create a account in "https://pro.coinmarketcap.com/account/"
+// MONGO_URL: mongo connection url, example: "mongodb://username:password@host:port/price", DOT USE "localhost or 127.0.0.1 " and please specify db table "price" or other.
+// REDIS_URL: redis connection url, example: "redis://username:authpassword@host:port", DOT USE "localhost or 127.0.0.1 ".
+module.exports = {
+  apps: [{
+    name: 'price-query',
+    script: './dist/query/index.js',
+    env: {
+      DD_SITE: "datadoghq.com",
+      DD_API_KEY: "----** DD_API_KEY **----",
+      DD_APP_KEY: "----** DD_APP_KEY **----",
+      CMC_API_KEY: "----** CMC_API_KEY **----",
+      MONGO_URL: "----** MONGO_URL **----",
+      REDIS_URL: "----** REDIS_URL **----",
+    }
+  }, {
+    name: 'price-market',
+    script: './dist/market/index.js',
+    env: {
+      DD_SITE: "datadoghq.com",
+      DD_API_KEY: "----** DD_API_KEY **----",
+      DD_APP_KEY: "----** DD_APP_KEY **----",
+      CMC_API_KEY: "----** CMC_API_KEY **----",
+      MONGO_URL: "----** MONGO_URL **----",
+      REDIS_URL: "----** REDIS_URL **----",
+    }
+  }, {
+    name: 'price-chain',
+    script: './dist/chain/index.js',
+    env: {
+      DD_SITE: "datadoghq.com",
+      DD_API_KEY: "----** DD_API_KEY **----",
+      DD_APP_KEY: "----** DD_APP_KEY **----",
+      CMC_API_KEY: "----** CMC_API_KEY **----",
+      MONGO_URL: "----** MONGO_URL **----",
+      REDIS_URL: "----** REDIS_URL **----",
+    }
+  }]
+};
+```
+
+3. run 
+```bash
+docker run -v PATH/config.js:/usr/src/app/pm2.config.js -p 1000:1000 -p 1001:1001 -p 1002:1002  shenger/price-server:1.0
+```
+
+4. server will start in port 1000
+
+
+
+# 2. start step directly
 1. edit file [config.ts] (if necessary) in __' utils/ '__
 ```ts
 // server port
