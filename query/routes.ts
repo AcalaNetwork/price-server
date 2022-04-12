@@ -1,6 +1,6 @@
 import { RouteOptions } from 'fastify';
 import { ALLOW_TOKENS, generateLogData, postEvent } from '../utils';
-import { queryExchange, QueryInRange, queryLastest } from './hander';
+import { checkLegalToken, queryExchange, QueryInRange, queryLastest, queryTokensInRange, queryTokensPrice } from './hander';
 
 interface queryProps {
   from: 'chain' | 'market',
@@ -27,28 +27,29 @@ export const queryRoutes: RouteOptions[] = [
       if('KRMRK' === _token.toUpperCase()) {
         _token = 'RMRK';
       }
-      if (!ALLOW_TOKENS.includes(_token.toUpperCase())) {
+      const check = checkLegalToken(token);
+      if (check.length > 0) {
         return {
           code: 0,
           data: {
             price: [0],
-            message: 'Unsupported token'
+            message: `Exist unsupported tokens (${check.join(',')})`
           }
         };
       }
       if (!totalCount || totalCount <= 0 || !intervalUnit) {
-        const data = await queryLastest(from, _token.toUpperCase());
-        const [error, price] = data;
+        const data = await queryTokensPrice(from, _token.toUpperCase());
+        const {error, prices} = data;
         if (error != null) {
           await postEvent({
             text: JSON.stringify(generateLogData(req, res)),
-            title: 'query lastest error',
+            title: 'Query lastest error',
             alertType: 'warning'
           });
           return {
             code: 0,
             data: {
-              price: [0],
+              price: prices,
               message: error
             }
           }
@@ -56,13 +57,13 @@ export const queryRoutes: RouteOptions[] = [
           return {
             code: 1,
             data: {
-              price: [price],
+              price: prices,
               message: '',
             }
           }
         };
       } else {
-        const [error, prices] = await QueryInRange(from, _token, totalCount, intervalUnit.toUpperCase(), intervalNum);
+        const {error, prices} = await queryTokensInRange(from, _token, totalCount, intervalUnit.toUpperCase(), intervalNum);
         if (error != null) {
           return {
             code: 1,

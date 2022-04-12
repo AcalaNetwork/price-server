@@ -1,9 +1,23 @@
 import { exchangeModal, get, priceModal, set } from "../db";
 import moment from "moment";
-import { generateRedisKey, TFrom } from "../utils";
+import { ALLOW_TOKENS, generateRedisKey, TFrom } from "../utils";
 import { server } from './index';
 
-export const queryLastest = async (from: TFrom = 'market', token: string) => {
+export const queryTokensPrice = async (from: TFrom = 'market', tokens: string) => {
+  const tokenList = tokens.split(',');
+
+  const prices = await Promise.all(tokenList.map(token => queryLastest(from, token)));
+
+  const result = prices.map(item => item[0] != null || item[1] == null ? 0 : item[1]);
+  const errorLength = prices.filter(item => item[0] != null).length;
+
+  return {
+    prices: result,
+    error: errorLength === prices.length ? 'No price!' : (errorLength > 0 ? 'Existing price is 0' : null)
+  }
+}
+
+export const queryLastest = async (from: TFrom = 'market', token: string): Promise<[string | null, number | null]> => {
   const redisKey = generateRedisKey(from, token, 'lastest');
   const redisClient = server.getRedisClient();
   try {
@@ -25,7 +39,21 @@ export const queryLastest = async (from: TFrom = 'market', token: string) => {
   }
 }
 
-export const QueryInRange = async (from: TFrom, token: string, totalCount: number, unit: string, num = 1) => {
+export const queryTokensInRange = async (from: TFrom, tokens: string, totalCount: number, unit: string, num = 1) => {
+  const tokenList = tokens.split(',');
+
+  const prices = await Promise.all(tokenList.map(item => QueryInRange(from, item, totalCount, unit, num)));
+
+  const result = prices.map(item => item[0] != null || item[1] == null ? [0] : item[1]);
+  const errorLength = prices.filter(item => item[0] != null).length;
+
+  return {
+    prices: result,
+    error: errorLength === prices.length ? 'All no price!' : (errorLength > 0 ? 'Existing price is 0' : null)
+  }
+}
+
+export const QueryInRange = async (from: TFrom, token: string, totalCount: number, unit: string, num = 1): Promise<[string | null, number[] | null]> => {
   const redisKey = unit === 'D' ? `${moment(new Date()).format('YYYY-MM-DD')}-${num}-${unit}-${totalCount}-${from}-${token}` : `${moment(new Date()).format('YYYY-MM-DD-HH')}-${num}-${unit}-${totalCount}-${from}-${token}`;
   const redisClient = server.getRedisClient();
   try {
@@ -96,4 +124,12 @@ export const GetPreNTimes = (total: number, unit: string, num = 1) => {
   }
 
   return times;
+}
+
+export const checkLegalToken = (tokens: string) => {
+  const tokenList = tokens.split(',');
+
+  const result = tokenList.filter(token => !ALLOW_TOKENS.includes(token.toUpperCase()));
+
+  return result;
 }
