@@ -48,7 +48,7 @@ export const queryTokensInRange = async (from: TFrom, tokens: string, totalCount
   const errorLength = prices.filter(item => item[0] != null).length;
 
   return {
-    prices: result,
+    prices: tokenList.length === 1 ? result[0] : result,
     error: errorLength === prices.length ? 'All no price!' : (errorLength > 0 ? 'Existing price is 0' : null)
   }
 }
