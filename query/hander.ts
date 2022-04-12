@@ -44,7 +44,7 @@ export const queryTokensInRange = async (from: TFrom, tokens: string, totalCount
 
   const prices = await Promise.all(tokenList.map(item => QueryInRange(from, item, totalCount, unit, num)));
 
-  const result = prices.map(item => item[0] != null || item[1] == null ? [0] : item[1]);
+  const result = prices.map(item => item[0] != null || item[1] == [] ? [0] : item[1]);
   const errorLength = prices.filter(item => item[0] != null).length;
 
   return {

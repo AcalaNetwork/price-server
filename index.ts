@@ -49,7 +49,7 @@ export class Server {
   }
 
   public connectMongo() {
-    mongo.connect(process.env.MONGO_URL as string).then(() => {
+    mongo.connect(`mongodb://mongo:${MONGO_PORT}/price`).then(() => {
       console.log(`Mongo in [${this.name}] Connect Success!`);
     });
   }
