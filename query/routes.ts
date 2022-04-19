@@ -25,7 +25,7 @@ export const queryRoutes: RouteOptions[] = [
       // SPECIAL TREATMENT
       // [RMRK, KRMRK, BTC, KBTC]
       let _token = token.toUpperCase().replace('KRMRK', 'RMRK').replace('KBTC', 'BTC');
-      const check = checkLegalToken(token);
+      const check = checkLegalToken(_token);
       if (check.length > 0) {
         return {
           code: 0,
