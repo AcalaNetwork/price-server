@@ -22,11 +22,9 @@ export const queryRoutes: RouteOptions[] = [
     },
     handler: async (req, res) => {
       const { token, from, totalCount, intervalUnit, intervalNum } = req.query as queryProps;
-      // RMRK && KRMRK PSPECIAL TREATMENT
-      let _token = token;
-      if('KRMRK' === _token.toUpperCase()) {
-        _token = 'RMRK';
-      }
+      // SPECIAL TREATMENT
+      // [RMRK, KRMRK, BTC, KBTC]
+      let _token = token.toUpperCase().replace('KRMRK', 'RMRK').replace('KBTC', 'BTC');
       const check = checkLegalToken(token);
       if (check.length > 0) {
         return {
