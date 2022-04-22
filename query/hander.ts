@@ -3,12 +3,19 @@ import moment from "moment";
 import { ALLOW_TOKENS, generateRedisKey, TFrom } from "../utils";
 import { server } from './index';
 
-export const queryTokensPrice = async (from: TFrom = 'market', tokens: string) => {
+export const queryTokensPrice = async (from: TFrom = 'market', tokens: string, currency = 'USD') => {
   const tokenList = tokens.split(',');
+
+  let rate = 1;
+  if(currency === 'USD') {
+    const exchange = await queryExchange();
+    const result = exchange[1];
+    rate = result === null ? 1 : result;
+  }
 
   const prices = await Promise.all(tokenList.map(token => queryLastest(from, token)));
 
-  const result = prices.map(item => item[0] != null || item[1] == null ? 0 : item[1]);
+  const result = prices.map(item => item[0] != null || item[1] == null ? 0 : item[1] * rate);
   const errorLength = prices.filter(item => item[0] != null).length;
 
   return {
@@ -39,12 +46,19 @@ export const queryLastest = async (from: TFrom = 'market', token: string): Promi
   }
 }
 
-export const queryTokensInRange = async (from: TFrom, tokens: string, totalCount: number, unit: string, num = 1) => {
+export const queryTokensInRange = async (from: TFrom, tokens: string, totalCount: number, unit: string, num = 1, currency = 'USD') => {
   const tokenList = tokens.split(',');
+
+  let rate = 1;
+  if(currency === 'USD') {
+    const exchange = await queryExchange();
+    const result = exchange[1];
+    rate = result === null ? 1 : result;
+  }
 
   const prices = await Promise.all(tokenList.map(item => QueryInRange(from, item, totalCount, unit, num)));
 
-  const result = prices.map(item => item[0] != null || item[1] == [] ? [0] : item[1]);
+  const result = prices.map(item => item[0] != null || item[1] == [] ? [0] : item[1] * rate);
   const errorLength = prices.filter(item => item[0] != null).length;
 
   return {
@@ -76,7 +90,7 @@ export const QueryInRange = async (from: TFrom, token: string, totalCount: numbe
   }
 }
 
-export const queryExchange = async (base = 'USD', convert = 'CNY') => {
+export const queryExchange = async (base = 'USD', convert = 'CNY'): Promise<[string | null, number | null]> => {
   const redisKey = `${base}-${convert}`;
   const redisClient = server.getRedisClient();
   try {
@@ -88,7 +102,7 @@ export const queryExchange = async (base = 'USD', convert = 'CNY') => {
       } else {
         const Exchange = dbExchange[0].rate;
         await set(redisClient, redisKey, Exchange.toString(), 'EX', 60 * 60 * 12);
-        return [null, Exchange];
+        return [null, Number(Exchange)];
       }
     } else {
       return [null, Number(redisExchange as string)];

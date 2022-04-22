@@ -8,6 +8,7 @@ interface queryProps {
   totalCount?: number;
   intervalUnit?: string,
   intervalNum?: number;
+  currency?: string;
 }
 
 export const queryRoutes: RouteOptions[] = [
@@ -21,7 +22,7 @@ export const queryRoutes: RouteOptions[] = [
       }
     },
     handler: async (req, res) => {
-      const { token, from, totalCount, intervalUnit, intervalNum } = req.query as queryProps;
+      const { token, from, totalCount, intervalUnit, intervalNum, currency } = req.query as queryProps;
       // SPECIAL TREATMENT
       // [RMRK, KRMRK, BTC, KBTC]
       let _token = token.toUpperCase().replace('KRMRK', 'RMRK').replace('KBTC', 'BTC');
@@ -36,7 +37,7 @@ export const queryRoutes: RouteOptions[] = [
         };
       }
       if (!totalCount || totalCount <= 0 || !intervalUnit) {
-        const data = await queryTokensPrice(from, _token.toUpperCase());
+        const data = await queryTokensPrice(from, _token.toUpperCase(), currency);
         const {error, prices} = data;
         if (error != null) {
           await postEvent({
@@ -61,7 +62,7 @@ export const queryRoutes: RouteOptions[] = [
           }
         };
       } else {
-        const {error, prices} = await queryTokensInRange(from, _token, totalCount, intervalUnit.toUpperCase(), intervalNum);
+        const {error, prices} = await queryTokensInRange(from, _token, totalCount, intervalUnit.toUpperCase(), intervalNum, currency);
         if (error != null) {
           return {
             code: 1,
