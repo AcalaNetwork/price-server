@@ -7,7 +7,7 @@ export const queryTokensPrice = async (from: TFrom = 'market', tokens: string, c
   const tokenList = tokens.split(',');
 
   let rate = 1;
-  if(currency === 'USD') {
+  if(currency === 'CNY') {
     const exchange = await queryExchange();
     const result = exchange[1];
     rate = result === null ? 1 : result;
@@ -50,7 +50,7 @@ export const queryTokensInRange = async (from: TFrom, tokens: string, totalCount
   const tokenList = tokens.split(',');
 
   let rate = 1;
-  if(currency === 'USD') {
+  if(currency === 'CNY') {
     const exchange = await queryExchange();
     const result = exchange[1];
     rate = result === null ? 1 : result;
