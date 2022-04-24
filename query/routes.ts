@@ -1,6 +1,6 @@
 import { RouteOptions } from 'fastify';
-import { ALLOW_TOKENS, generateLogData, postEvent } from '../utils';
-import { checkLegalToken, queryExchange, QueryInRange, queryLastest, queryTokensInRange, queryTokensPrice } from './hander';
+import { generateLogData, postEvent } from '../utils';
+import { queryExchange, queryTokensInRange, queryTokensPrice } from './hander';
 
 interface queryProps {
   from: 'chain' | 'market',
@@ -26,16 +26,6 @@ export const queryRoutes: RouteOptions[] = [
       // SPECIAL TREATMENT
       // [RMRK, KRMRK, BTC, KBTC]
       let _token = token.toUpperCase().replace('KRMRK', 'RMRK').replace('KBTC', 'BTC');
-      const check = checkLegalToken(_token);
-      if (check.length > 0) {
-        return {
-          code: 0,
-          data: {
-            price: [0],
-            message: `Exist unsupported tokens (${check.join(',')})`
-          }
-        };
-      }
       if (!totalCount || totalCount <= 0 || !intervalUnit) {
         const data = await queryTokensPrice(from, _token.toUpperCase(), currency);
         const {error, prices} = data;
