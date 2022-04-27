@@ -1,6 +1,6 @@
 import { exchangeModal, get, priceModal, set } from "../db";
 import moment from "moment";
-import { generateRedisKey, TFrom } from "../utils";
+import { ALLOW_TOKENS, generateRedisKey, TFrom } from "../utils";
 import { server } from './index';
 
 export const queryTokensPrice = async (from: TFrom = 'market', tokens: string, currency = 'USD') => {
@@ -26,6 +26,7 @@ export const queryTokensPrice = async (from: TFrom = 'market', tokens: string, c
 
 export const queryLastest = async (from: TFrom = 'market', token: string): Promise<[string | null, number | null]> => {
   if(token.toUpperCase() === 'ARIS') return [null, 0];
+  if(checkLegalToken(token)) return [null, 0];
   const redisKey = generateRedisKey(from, token, 'lastest');
   const redisClient = server.getRedisClient();
   try {
@@ -76,6 +77,7 @@ export const queryTokensInRange = async (from: TFrom, tokens: string, totalCount
 
 export const QueryInRange = async (from: TFrom, token: string, totalCount: number, unit: string, num = 1): Promise<[string | null, number[] | null]> => {
   if(token.toUpperCase() === 'ARIS') return ['exist 0 price', [0]];
+  if(checkLegalToken(token)) return [null, [0]];
   const redisKey = unit === 'D' ? `${moment(new Date()).format('YYYY-MM-DD')}-${num}-${unit}-${totalCount}-${from}-${token}` : `${moment(new Date()).format('YYYY-MM-DD-HH')}-${num}-${unit}-${totalCount}-${from}-${token}`;
   const redisClient = server.getRedisClient();
   try {
@@ -146,4 +148,12 @@ export const GetPreNTimes = (total: number, unit: string, num = 1) => {
   }
 
   return times;
+}
+
+export const checkLegalToken = (tokens: string) => {
+  const tokenList = tokens.split(',');
+
+  const result = tokenList.filter(token => !ALLOW_TOKENS.includes(token.toUpperCase()));
+
+  return result.length > 0;
 }
