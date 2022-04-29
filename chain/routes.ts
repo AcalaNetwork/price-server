@@ -1,22 +1,17 @@
-import { RouteOptions } from 'fastify';
-
-interface queryProps {
-  from: 'chain' | 'market',
-  token: string;
-}
+import { RouteOptions } from "fastify";
 
 export const chainRoutes: RouteOptions[] = [
   {
-    method: 'GET',
-    url: '/',
+    method: "GET",
+    url: "/",
     schema: {
       querystring: {
-        from: { type: 'string' },
-        token: { type: 'string' }
-      }
+        from: { type: "string" },
+        token: { type: "string" },
+      },
     },
     handler: async (req, res) => {
-      res.send('chain get route');
-    }
-  }
+      res.send("chain get route");
+    },
+  },
 ];
