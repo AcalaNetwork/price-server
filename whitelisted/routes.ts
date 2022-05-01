@@ -17,7 +17,7 @@ export const queryRoutes: RouteOptions[] = [
           title: "Query Trading Pairs error",
           alertType: "warning",
         });
-        res.code(400);
+        res.code(500);
         res.send(error);
       } else {
         res.send(data);

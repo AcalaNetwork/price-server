@@ -1,19 +1,14 @@
 import { set } from "../db";
 import { Redis } from "ioredis";
-import { ITradingPair, tradingPairsModel } from "./mongoModels";
+import { ITradingPair } from "./mongoModels";
 
-// write lastest trading pairs into db and update redis
+// write lastest trading pairs into redis
 export const writeTradingPairs = async (
   redisClient: Redis,
-  tradingPairs: ITradingPair[],
-  time?: string | Date
+  tradingPairs: ITradingPair[]
 ) => {
   const redisKey = "tradingPairs:latest";
-  await tradingPairsModel.create({
-    pairs: tradingPairs,
-    createTime: time,
-  });
-  await set(redisClient, redisKey, JSON.stringify(tradingPairs), "EX", 60 * 30);
+  await set(redisClient, redisKey, JSON.stringify(tradingPairs), "EX", 60 * 60 * 6);
 
   return tradingPairs;
 };
