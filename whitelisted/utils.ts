@@ -60,43 +60,6 @@ export const queryTradesWithParams = async (
     `
     );
 
-    console.log(`
-    query {
-      swaps(
-        orderBy: TIMESTAMP_DESC,
-        first: ${partialToLoad},
-        offset: ${alreadyLoaded},
-        filter: {
-          token0Id: {
-            equalTo: "${type === "buy" ? token1.name : token2.name}"
-          },
-          token1Id: {
-            equalTo: "${type === "buy" ? token2.name : token1.name}"
-          },
-          ${
-            startTime || endTime
-              ? `timestamp: {
-                ${startTime ? `greaterThanOrEqualTo: "${startTime}",` : ""}
-                ${endTime ? `lessThanOrEqualTo: "${endTime}",` : ""}
-              }`
-              : ""
-          }
-        }
-      )  {
-        nodes {
-          id
-          token0Id
-          token1Id
-          price0
-          price1
-          token0InAmount
-          token1OutAmount
-          timestamp
-        }
-      }
-    }
-  `);
-
     if (partialResult?.swaps?.nodes?.length > 0) {
       results = results.concat(
         partialResult.swaps.nodes.map((item: any) => {
