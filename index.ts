@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance, FastifyPluginCallback, onRequestAsyncHookHandler, onRequestHookHandler, RouteOptions } from 'fastify';
+import fastify, { FastifyInstance, FastifyPluginCallback, FastifyRegisterOptions, onRequestAsyncHookHandler, onRequestHookHandler, RouteOptions } from 'fastify';
 import cors from 'fastify-cors';
 import mongo from 'mongoose';
 import ioredis, { Redis } from 'ioredis';
@@ -65,8 +65,8 @@ export class Server {
     return this;
   }
 
-  public registeMiddlies(plug: FastifyPluginCallback) {
-    this.server.register(plug);
+  public registeMiddlies(plug: FastifyPluginCallback, opts?: FastifyRegisterOptions<Record<any, any>>) {
+    this.server.register(plug, opts);
     return this;
   }
 

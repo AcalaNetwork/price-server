@@ -9,7 +9,7 @@
     "start:query": "nodemon ./query/index.ts",
     "start:chain": "nodemon ./chain/index.ts",
     "start:market": "nodemon ./market/index.ts",
-    "start:whitelisted": "nodemon ./whitelisted/index.ts",
+    "start:query-rate-limited": "nodemon ./query-rate-limited/index.ts",
     "build": "rm -rf ./dist && tsc"
   },
   "resolutions": {
@@ -24,6 +24,7 @@
     "@acala-network/sdk": "4.0.4-3",
     "@acala-network/sdk-core": "4.0.4-3",
     "@datadog/datadog-api-client": "^1.0.0-beta.5",
+    "@fastify/rate-limit": "^6.0.0",
     "@polkadot/api": "^7.14.3",
     "@polkadot/types": "^7.14.3",
     "add": "^2.0.6",

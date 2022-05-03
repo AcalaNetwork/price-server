@@ -1,7 +1,7 @@
 export const QUERY_PORT = 1000;
 export const CHAIN_PORT = 1001;
 export const MARKET_PORT = 1002;
-export const WHITELISTED_PORT = 1003;
+export const QUERY_RATE_LIMITED_PORT = 1003;
 
 export const MONGO_PORT = 27017;
 export const REDIS_PORT = 6379;

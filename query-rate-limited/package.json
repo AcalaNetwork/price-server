@@ -1,5 +1,5 @@
 {
-  "name": "whitelisted",
+  "name": "query-rate-limit",
   "version": "1.0.0",
   "description": "Query exchange information from db",
   "main": "index.js",
