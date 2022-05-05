@@ -11,6 +11,7 @@ services:
       - "1000:1000"
       - "1001:1001"
       - "1002:1002"
+      - "1003:1003"
     restart: always
     environment:
       NODE_ENV: production

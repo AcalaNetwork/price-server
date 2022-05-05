@@ -1,6 +1,6 @@
 FROM node:14-alpine
 
-EXPOSE 1000 1001 1002
+EXPOSE 1000 1001 1002 1003
 
 ADD . /usr/src/app
 WORKDIR /usr/src/app
