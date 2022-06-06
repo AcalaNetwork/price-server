@@ -15,6 +15,11 @@ export class Server {
     this.port = port;
     this.name = name;
     this.server = fastify();
+    this.server.register(cors, {
+      allowedHeaders: 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization',
+      methods: 'GET, POST, OPTIONS',
+      origin: '*'
+    })
     this.connectMongo();
     this.redisClient = this.connectRedis();
     auth()
